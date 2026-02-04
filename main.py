@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 from datetime import datetime, timedelta
 
-TOKEN = '8579710701:AAHVbI-Yu36CcKq3VKJ3gNjhm8gdxyAC2AA'
+TOKEN = '8487799319:AAEnohFOagYKOR03bmuf-PDg37R87Lm4HFk'
 bot = telebot.TeleBot(TOKEN)
 
 # Расписание на основе твоих файлов (для группы И-1-25)
