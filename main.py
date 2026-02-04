@@ -1,36 +1,52 @@
 import telebot
+from telebot import types
 
-# Вставь сюда API Token, который тебе дал @BotFather
 TOKEN = '8579710701:AAHVbI-Yu36CcKq3VKJ3gNjhm8gdxyAC2AA'
-
 bot = telebot.TeleBot(TOKEN)
 
-# Ответ на команду /start
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    welcome_text = (
-        "Селям! Я твой первый бот.\n"
-        "Отправь мне любую фразу, и я отвечу тебе как настоящий ногай!"
-    )
-    bot.reply_to(message, welcome_text)
+# 1. Твоё расписание (заполни его своими предметами)
+SCHEDULE = {
+    'Пн': '1. Математика\n2. История\n3. Физкультура',
+    'Вт': '1. Информатика\n2. Английский\n3. Физика',
+    'Ср': '1. Литература\n2. География\n3. Химия',
+    'Чт': '1. Биология\n2. Обществознание\n3. ОБЖ',
+    'Пт': '1. Родной язык\n2. Технология\n3. Искусство',
+    'Сб': 'Пар нет. Отдыхай! 😎'
+}
 
-# Обработка текстовых сообщений
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    user_text = message.text
+# Функция для создания клавиатуры
+def make_keyboard():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    # Создаем кнопки (можно по 2-3 в ряд)
+    btn1 = types.KeyboardButton('Пн')
+    btn2 = types.KeyboardButton('Вт')
+    btn3 = types.KeyboardButton('Ср')
+    btn4 = types.KeyboardButton('Чт')
+    btn5 = types.KeyboardButton('Пт')
+    btn6 = types.KeyboardButton('Сб')
     
-    # Небольшая "ногаизация" для примера: заменяем 'и' на 'иги' или добавляем колорит
-    if "привет" in user_text.lower():
-        reply = "Селям, амансынъыз ба!"
-    elif "как дела" in user_text.lower():
-        reply = "Бек иги, сав болынъыз! Оьзинъизде не хабер?"
-    else:
-        # Просто повторяем текст пользователя с припиской
-        reply = f"Сен дединъ: «{user_text}». Бек иги!"
+    markup.add(btn1, btn2, btn3)
+    markup.add(btn4, btn5, btn6)
+    return markup
 
-    bot.send_message(message.chat.id, reply)
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(
+        message.chat.id, 
+        "Привет! Выбери день недели, чтобы узнать расписание:", 
+        reply_markup=make_keyboard()
+    )
 
-# Запуск бота
+@bot.message_handler(func=lambda message: message.text in SCHEDULE.keys())
+def show_schedule(message):
+    day = message.text
+    response = f"📅 *Расписание на {day}:*\n\n{SCHEDULE[day]}"
+    bot.send_message(message.chat.id, response, parse_mode="Markdown")
+
+# На случай, если пользователь напишет что-то другое
+@bot.message_handler(func=lambda message: True)
+def other(message):
+    bot.send_message(message.chat.id, "Пользуйся кнопками внизу! 👇", reply_markup=make_keyboard())
+
 if __name__ == "__main__":
-    print("Бот запущен...")
     bot.infinity_polling()
