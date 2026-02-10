@@ -69,3 +69,5 @@ def show_day(message, day_name, week_type, label):
 
 if __name__ == "__main__":
     bot.infinity_polling()
+
+#edsfsdf
